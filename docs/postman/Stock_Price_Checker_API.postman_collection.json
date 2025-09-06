@@ -1,0 +1,177 @@
+{
+  "info": {
+    "name": "Stock Price Checker API",
+    "description": "Advanced Stock Price Checker API with real-time price tracking and moving average calculation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Stock Operations",
+      "item": [
+        {
+          "name": "Start Tracking Stock",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock/AAPL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock", "AAPL"]
+            },
+            "description": "Start tracking a stock symbol with periodic price checks"
+          }
+        },
+        {
+          "name": "Get Stock Price & Moving Average",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock/AAPL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock", "AAPL"]
+            },
+            "description": "Get current stock price, moving average, and price history"
+          }
+        },
+        {
+          "name": "Get Detailed Stock Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock/AAPL/detailed",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock", "AAPL", "detailed"]
+            },
+            "description": "Get comprehensive stock analytics including 24h metrics and tracking status"
+          }
+        },
+        {
+          "name": "Stop Tracking Stock",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock/AAPL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock", "AAPL"]
+            },
+            "description": "Stop tracking a stock symbol"
+          }
+        },
+        {
+          "name": "Get All Tracked Symbols",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock"]
+            },
+            "description": "Get list of all currently tracked stock symbols"
+          }
+        },
+        {
+          "name": "Get System Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock/system/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock", "system", "stats"]
+            },
+            "description": "Get system statistics including active jobs and memory usage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "health"]
+            },
+            "description": "Simple health check endpoint"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Invalid Requests",
+      "item": [
+        {
+          "name": "Invalid Symbol Format",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock/invalid123",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock", "invalid123"]
+            },
+            "description": "Test with invalid symbol format (should return 400)"
+          }
+        },
+        {
+          "name": "Symbol Too Long",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock/TOOLONG",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock", "TOOLONG"]
+            },
+            "description": "Test with symbol longer than 5 characters (should return 400)"
+          }
+        },
+        {
+          "name": "Untracked Symbol",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/stock/NOTTRACKED",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "stock", "NOTTRACKED"]
+            },
+            "description": "Test getting data for untracked symbol (should return 404)"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}

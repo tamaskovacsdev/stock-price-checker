@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model StockPrice {
+  id           String       @id @default(uuid())
+  symbol       String
+  price        Decimal      @db.Decimal(10, 2)
+  volume       BigInt?
+  timestamp    DateTime     @default(now())
+  createdAt    DateTime     @default(now())
+  
+  symbolConfig SymbolConfig @relation(fields: [symbol], references: [symbol])
+  
+  @@index([symbol, timestamp])
+  @@index([timestamp])
+  @@map("stock_prices")
+}
+
+model SymbolConfig {
+  symbol        String        @id
+  isActive      Boolean       @default(true)
+  checkInterval Int           @default(60000) // milliseconds
+  lastChecked   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  prices        StockPrice[]
+  schedulerJob  SchedulerJob?
+  
+  @@index([isActive])
+  @@map("symbol_configs")
+}
+
+model SchedulerJob {
+  id           String       @id @default(uuid())
+  symbol       String       @unique
+  jobId        String       @unique
+  status       JobStatus    @default(ACTIVE)
+  lastRun      DateTime?
+  nextRun      DateTime?
+  errorCount   Int          @default(0)
+  lastError    String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  
+  symbolConfig SymbolConfig @relation(fields: [symbol], references: [symbol])
+  
+  @@map("scheduler_jobs")
+}
+
+enum JobStatus {
+  ACTIVE
+  PAUSED
+  FAILED
+  STOPPED
+}

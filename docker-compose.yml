@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: stockchecker-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: stockchecker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stockchecker-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: stockchecker-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stockchecker-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stockchecker-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/stockchecker?schema=public
+      REDIS_URL: redis://redis:6379
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY}
+      PORT: 3000
+      API_PREFIX: api/v1
+      THROTTLE_TTL: 60
+      THROTTLE_LIMIT: 100
+      CACHE_TTL: 300
+      CACHE_MAX: 100
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - stockchecker-network
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        node dist/main.js
+      "
+
+networks:
+  stockchecker-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
